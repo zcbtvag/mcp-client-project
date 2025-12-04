@@ -53,3 +53,36 @@ class MCPClient:
             return client_session
         except Exception:
             raise RuntimeError("Error: Failed to connect to server")
+
+    async def list_all_members(self) -> None:
+        """List all available tools, prompts, and resources."""
+        print("MCP Server Members")
+        print("=" * 50)
+
+        sections = {
+            "tools": self.client_session.list_tools,
+            "prompts": self.client_session.list_prompts,
+            "resources": self.client_session.list_resources,
+        }
+        for section, listing_method in sections.items():
+            await self._list_section(section, listing_method)
+
+        print("\n" + "=" * 50)
+
+    async def _list_section(
+        self,
+        section: str,
+        list_method: Callable[[], Awaitable[Any]],
+    ) -> None:
+        try:
+            items = getattr(await list_method(), section)
+            if items:
+                print(f"\n{section.upper()} ({len(items)}):")
+                print("-" * 30)
+                for item in items:
+                    description = item.description or "No description"
+                    print(f" > {item.name} - {description}")
+            else:
+                print(f"\n{section.upper()}: None available")
+        except Exception as e:
+            print(f"\n{section.upper()}: Error - {e}")
