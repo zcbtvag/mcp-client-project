@@ -10,6 +10,9 @@ except ImportError:
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
+from mcp_client import chat
+from mcp_client.handlers import OpenAIQueryHandler
+
 class MCPClient:
     """MCP client to interact with MCP server.
 
@@ -86,3 +89,11 @@ class MCPClient:
                 print(f"\n{section.upper()}: None available")
         except Exception as e:
             print(f"\n{section.upper()}: Error - {e}")
+    
+    async def run_chat(self) -> None:
+        """Start interactive chat with MCP server using OpenAI."""
+        try:
+            handler = OpenAIQueryHandler(self.client_session)
+            await chat.run_chat(handler)
+        except RuntimeError as e:
+            print(e)

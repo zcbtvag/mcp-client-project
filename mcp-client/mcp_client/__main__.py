@@ -14,8 +14,14 @@ async def main() -> None:
         async with MCPClient(str(args.server_path)) as client: 
             if args.members:
                 await client.list_all_members()
+            elif args.chat:
+                await client.run_chat()
     except RuntimeError as e:
         print(e)
+
+def cli_main():
+    """Entry point for the mcp-client CLI app."""
+    asyncio.run(main())
 
 if __name__ == "__main__":
     asyncio.run(main())
